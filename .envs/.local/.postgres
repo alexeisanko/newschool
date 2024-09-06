@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=newschool
+POSTGRES_USER=DqErusnXwhnYgYYgTNWQjNVOYLmAucYG
+POSTGRES_PASSWORD=7OybKXtWW7A1KqNdBIBQV7vEGQ3p5qEhXgEoz7ieB8bfpgHK5bx45WlapvF2jAaK
