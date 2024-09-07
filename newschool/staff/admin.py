@@ -25,11 +25,5 @@ class CategoryLibraryStaffAdmin(admin.ModelAdmin):
 
 @admin.register(LibraryStaff)
 class LibraryStaffAdmin(admin.ModelAdmin):
-    list_display = ("name", "link", "get_category_list")
+    list_display = ("name", "link", "category")
     search_fields = ("name", "link")
-
-    @admin.display(
-        description="Category",
-    )
-    def get_category_list(self, obj):
-        return ", ".join(obj.category.values_list("category", flat=True))
