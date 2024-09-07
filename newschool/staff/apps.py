@@ -4,10 +4,10 @@ from django.apps import AppConfig
 from django.utils.translation import gettext_lazy as _
 
 
-class SiteConfig(AppConfig):
-    name = "newschool.site"
-    verbose_name = _("Site")
+class StaffConfig(AppConfig):
+    name = "newschool.staff"
+    verbose_name = _("Staff")
 
     def ready(self):
         with contextlib.suppress(ImportError):
-            import newschool.site.signals  # noqa: F401
+            import newschool.staff.signals  # noqa: F401

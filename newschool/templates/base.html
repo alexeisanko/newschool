@@ -1,4 +1,5 @@
 {% load static i18n %}
+{% load bootstrap5 %}
 
 <!DOCTYPE html>
 {% get_current_language as LANGUAGE_CODE %}
@@ -17,11 +18,7 @@
     <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}" />
     {% block css %}
       <!-- Latest compiled and minified Bootstrap CSS -->
-      <link rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css"
-            integrity="sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer" />
+      {% bootstrap_css %}
       <!-- Your stuff: Third-party CSS libraries go here -->
       <!-- This file stores project-specific CSS -->
       <link href="{% static 'css/project.css' %}" rel="stylesheet" />
@@ -31,11 +28,7 @@
     {# Placed at the top of the document so pages load faster with defer #}
     {% block javascript %}
       <!-- Bootstrap JS -->
-      <script defer
-              src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js"
-              integrity="sha512-1/RvZTcCDEUjY/CypiMz+iqqtaoQfAITmNSJY17Myp4Ms5mdxPS5UV7iOfdZoxcGhzFbOm6sntTKJppjvuhg4g=="
-              crossorigin="anonymous"
-              referrerpolicy="no-referrer"></script>
+      {% bootstrap_javascript %}
       <!-- Your stuff: Third-party javascript libraries go here -->
       <!-- place project specific Javascript in this file -->
       <script defer src="{% static 'js/project.js' %}"></script>
@@ -43,89 +36,41 @@
   </head>
   <body class="{% block bodyclass %}{% endblock bodyclass %}">
     {% block body %}
-      <div class="mb-1">
-        <nav class="navbar navbar-expand-md navbar-light bg-light">
-          <div class="container-fluid">
-            <button class="navbar-toggler navbar-toggler-right"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <a class="navbar-brand" href="{% url 'home' %}">NewSchool</a>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                  <a class="nav-link" href="{% url 'home' %}">Home <span class="visually-hidden">(current)</span></a>
-                </li>
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle"
-                     href="#"
-                     id="navbarDropdown"
-                     role="button"
-                     data-bs-toggle="dropdown"
-                     aria-expanded="false">About</a>
-                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li>
-                      <a class="dropdown-item" href="#">Our Team</a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="#">Our Mission</a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="#">Our Values</a>
-                    </li>
-                  </ul>
-                </li>
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle"
-                     href="#"
-                     id="navbarDropdown"
-                     role="button"
-                     data-bs-toggle="dropdown"
-                     aria-expanded="false">Resources</a>
-                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li>
-                      <a class="dropdown-item" href="#">Blog</a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="#">FAQs</a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="#">Support</a>
-                    </li>
-                  </ul>
-                </li>
-                {% if request.user.is_authenticated %}
-                  <li class="nav-item">
-                    <a class="nav-link"
-                       href="{% url 'users:detail' request.user.username %}">{% translate "My Profile" %}</a>
-                  </li>
-                  <li class="nav-item">
-                    {# URL provided by django-allauth/account/urls.py #}
-                    <a class="nav-link" href="{% url 'account_logout' %}">{% translate "Sign Out" %}</a>
-                  </li>
-                {% else %}
-                  {% if ACCOUNT_ALLOW_REGISTRATION %}
-                    <li class="nav-item">
-                      {# URL provided by django-allauth/account/urls.py #}
-                      <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">{% translate "Sign Up" %}</a>
-                    </li>
-                  {% endif %}
-                  <li class="nav-item">
-                    {# URL provided by django-allauth/account/urls.py #}
-                    <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% translate "Sign In" %}</a>
-                  </li>
-                {% endif %}
-              </ul>
-            </div>
-          </div>
-        </nav>
-      </div>
-      <div class="container">
+      <header id="header" class="header d-flex align-items-center fixed-top">
+        <div class="container-fluid container-xl position-relative d-flex align-items-center">
+          <a href="{% url "home" %}"
+             class="logo d-flex align-items-center me-auto">
+            <img src="{% static "images/logo.png" %}" alt="" style="max-height:100px;" />
+            <h1 class="sitename"></h1>
+          </a>
+          <nav id="navmenu" class="navmenu">
+            <ul>
+              <li>
+                <a href="#">О студии</a>
+              </li>
+              <li>
+                <a href="#">Услуги</a>
+              </li>
+              <li>
+                <a href="#">Отзывы</a>
+              </li>
+              <li>
+                <a href="#">Контакты</a>
+              </li>
+            </ul>
+            <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+          </nav>
+          {% if request.user.is_authenticated %}
+            <a class="btn-getstarted" href="{% url 'users:profile' %}">Профиль</a>
+            <a class="btn-getstarted" href="{% url "users:logout" %}">Выйти</a>
+          {% else %}
+            <a id="sign-up-link btn-getstarted"
+               class="btn-getstarted"
+               href="{% url 'users:profile' %}">Войти</a>
+          {% endif %}
+        </div>
+      </header>
+      <main class="main">
         {% if messages %}
           {% for message in messages %}
             <div class="alert alert-dismissible {% if message.tags %}alert-{{ message.tags }}{% endif %}">
@@ -137,11 +82,15 @@
             </div>
           {% endfor %}
         {% endif %}
-        {% block main %}
-          {% block content %}
-          {% endblock content %}
-        {% endblock main %}
-      </div>
+        <section class="section" style="padding: 140px 0;">
+          <div class="container">
+            {% block main %}
+              {% block content %}
+              {% endblock content %}
+            {% endblock main %}
+          </div>
+        </section">
+      </main>
     {% endblock body %}
     <!-- /container -->
     {% block modal %}

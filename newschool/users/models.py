@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
-from django.db.models import CharField
+from django.db.models import PROTECT
+from django.db.models import ForeignKey
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
@@ -11,16 +11,14 @@ class User(AbstractUser):
     check forms.SignupForm and forms.SocialSignupForms accordingly.
     """
 
-    # First and last name do not cover name patterns around the globe
-
-    first_name = None  # type: ignore[assignment]
-    last_name = None  # type: ignore[assignment]
-    type_account = CharField(
-        _("Type staff"),
-        choices=[("admin", "Admin"), ("teacher", "Teacher"), ("student", "Student")],
-        max_length=10,
-        default="student",
+    type_staff = ForeignKey(
+        "staff.TypeStaff",
+        on_delete=PROTECT,
+        null=True,
+        blank=True,
     )
+
+    REQUIRED_FIELDS = []
 
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
