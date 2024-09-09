@@ -2,6 +2,7 @@ from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
+from django.views.generic import FormView
 from django.views.generic import TemplateView
 
 from newschool.staff.models import CategoryLibraryStaff
@@ -36,3 +37,7 @@ class UserLoginView(LoginView):
 
 
 user_login_view = UserLoginView.as_view()
+
+
+class CreateUserAdminView(LoginRequiredMixin, FormView):
+    template_name = "users/profile.html"

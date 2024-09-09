@@ -3,31 +3,54 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
+{% block sidebar %}
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link collapsed " href="{% url "users:profile" %}">
+          <span>Библиотека</span>
+        </a>
+      </li>
+      {% if request.user.is_superuser %}
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="#">
+            <span>Пользователи</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="{% url 'admin:index' %}">
+            <span>Панель администратора</span>
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </aside>
+{% endblock sidebar %}
 {% block content %}
-  <div class="container">
-    <img src="{% static "images/staff/staff-logo.png" %}" alt="" />
-    <table class="table table-striped table-bordered">
-      <thead>
-        <tr>
-          <th>Электронная Библиотека    Репетитора</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for category in categories_library_staff %}
-          <tr>
-            <td>
-              <h5>{{ category.category }}</h5>
-              {% for item in library_staff %}
-                {% if category == item.category %}
-                  <div>
-                    <a href="{{ item.link }}">{{ item.name }}</a>
-                  </div>
-                {% endif %}
-              {% endfor %}
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+  <section class="section">
+    <div class="col-lg-10">
+      {% for category in categories_library_staff %}
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">{{ category.category }}</h5>
+            <!-- Table with hoverable rows -->
+            <table class="table table-hover">
+              <tbody>
+                {% for item in library_staff %}
+                  {% if category == item.category %}
+                    <tr>
+                      <td>
+                        <a href="{{ item.link }}">{{ item.name }}</a>
+                      </td>
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
 {% endblock content %}

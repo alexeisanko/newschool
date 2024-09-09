@@ -35,42 +35,44 @@
     {% endblock javascript %}
   </head>
   <body class="{% block bodyclass %}{% endblock bodyclass %}">
-    {% block body %}
-      <header id="header" class="header d-flex align-items-center fixed-top">
-        <div class="container-fluid container-xl position-relative d-flex align-items-center">
-          <a href="{% url "home" %}"
-             class="logo d-flex align-items-center me-auto">
-            <img src="{% static "images/logo.png" %}" alt="" style="max-height:100px;" />
-            <h1 class="sitename"></h1>
-          </a>
-          <nav id="navmenu" class="navmenu">
-            <ul>
-              <li>
-                <a href="#">О студии</a>
-              </li>
-              <li>
-                <a href="#">Услуги</a>
-              </li>
-              <li>
-                <a href="#">Отзывы</a>
-              </li>
-              <li>
-                <a href="#">Контакты</a>
-              </li>
-            </ul>
-            <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-          </nav>
+    <!-- ======= Header ======= -->
+    <header id="header" class="header fixed-top d-flex align-items-center">
+      <div class="d-flex align-items-center justify-content-between">
+        <a href="{% url "home" %}" class="logo d-flex align-items-center">
+          <img src="{% static "images/logo.png" %}" alt="" />
+        </a>
+        <i class="bi bi-list toggle-sidebar-btn"></i>
+      </div>
+      <!-- End Logo -->
+      <nav class="header-nav ms-auto">
+        <ul class="d-flex align-items-center">
+          <li class="nav-item pe-3">
+            <a class="nav-link nav-profile d-flex align-items-center pe-0"
+               href="{% url "users:profile" %}">
+              <span class="d-none d-md-block  ps-2">
+                {% if request.user.is_authenticated %}
+                  Профиль
+                {% else %}
+                  Войти
+                {% endif %}
+              </span>
+            </a>
+          </li>
           {% if request.user.is_authenticated %}
-            <a class="btn-getstarted" href="{% url 'users:profile' %}">Профиль</a>
-            <a class="btn-getstarted" href="{% url "users:logout" %}">Выйти</a>
-          {% else %}
-            <a id="sign-up-link btn-getstarted"
-               class="btn-getstarted"
-               href="{% url 'users:profile' %}">Войти</a>
+            <li class="nav-item pe-3">
+              <a class="nav-link nav-profile d-flex align-items-center pe-0"
+                 href="{% url "users:logout" %}">
+                <span class="d-none d-md-block  ps-2">Выйти</span>
+              </a>
+            </li>
           {% endif %}
-        </div>
-      </header>
-      <main class="main">
+        </ul>
+      </nav>
+    </header>
+    {% block body %}
+      {% block sidebar %}
+      {% endblock sidebar %}
+      <main id="main" class="main">
         {% if messages %}
           {% for message in messages %}
             <div class="alert alert-dismissible {% if message.tags %}alert-{{ message.tags }}{% endif %}">
@@ -82,14 +84,10 @@
             </div>
           {% endfor %}
         {% endif %}
-        <section class="section" style="padding: 140px 0;">
-          <div class="container">
-            {% block main %}
-              {% block content %}
-              {% endblock content %}
-            {% endblock main %}
-          </div>
-        </section">
+        {% block main %}
+          {% block content %}
+          {% endblock content %}
+        {% endblock main %}
       </main>
     {% endblock body %}
     <!-- /container -->
