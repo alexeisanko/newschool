@@ -14,7 +14,7 @@ class User(AbstractUser):
     type_staff = ForeignKey(
         "staff.TypeStaff",
         on_delete=PROTECT,
-        null=False,
+        null=True,
     )
 
     REQUIRED_FIELDS = []
