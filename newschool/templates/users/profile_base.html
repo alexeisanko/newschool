@@ -13,7 +13,7 @@
           <span>Библиотека</span>
         </a>
       </li>
-      {% if request.user.is_admin %}
+      {% if request.user.is_staff %}
         <li class="nav-item">
           <a class="nav-link collapsed" href="{% url "users:manager_users" %}">
             <span>Пользователи</span>
