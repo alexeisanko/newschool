@@ -15,6 +15,7 @@ class User(AbstractUser):
         "staff.TypeStaff",
         on_delete=PROTECT,
         null=True,
+        blank=True,
     )
 
     REQUIRED_FIELDS = []
