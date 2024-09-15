@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block sidebar %}
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link collapsed " href="{% url "users:library" %}">
+          <i class="bi bi-grid"></i>
+          <span>Библиотека</span>
+        </a>
+      </li>
+      {% if request.user.is_superuser %}
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="{% url "users:manager_users" %}">
+            <span>Пользователи</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="{% url 'admin:index' %}">
+            <span>Панель администратора</span>
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </aside>
+{% endblock sidebar %}
+{% block content %}
+{% endblock content %}

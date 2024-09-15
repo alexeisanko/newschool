@@ -1,7 +1,47 @@
-{% extends "users/profile.html" %}
+{% extends "users/profile_base.html" %}
 
 {% load crispy_forms_tags %}
+
+{% crispy form form.helper %}
 {% load static %}
 
 {% block content %}
+  <section class="section">
+    <div class="row">
+      {% for user in users %}
+        <div class="col-lg-2">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title" style="display: inline-flex;">{{ user.username }}</h5>
+              <a href="{% url 'users:user_delete' user.id %}"
+                 class="btn btn-outline-danger btn-sm">Удалить</a>
+              <table class="table table-success">
+                <tbody>
+                  <tr>
+                    <td>{{ user.type_staff }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+      <div class="col-lg-6">
+        <div class="card ">
+          <div class="card-body">
+            <h5 class="card-title">Новый аккаунт</h5>
+            <p>Здесь вы можете создать новый аккаунт или обновить старый. Что бы обновить старый, вначале удалите старый</p>
+            <!-- Browser Default Validation -->
+            <form method="post" class="row g-3">
+              {{ form|crispy }}
+              <div class="col-12">
+                <button class="btn btn-success" type="submit">Создать</button>
+              </div>
+              {% csrf_token %}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 {% endblock content %}

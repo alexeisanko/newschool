@@ -1,23 +1,41 @@
 from typing import Any
 
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
+from django.http import HttpRequest
+from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
 from django.views.generic import FormView
 from django.views.generic import TemplateView
 
 from newschool.staff.models import CategoryLibraryStaff
 from newschool.staff.models import LibraryStaff
+from newschool.staff.models import TypeStaff
+from newschool.users.forms import UserCreationForm
 from newschool.users.models import User
 
 
 class UserDetailView(LoginRequiredMixin, TemplateView):
-    template_name = "users/profile.html"
+    template_name = "users/profile_base.html"
+    model = User
+
+    def get(self, request, *args, **kwargs):
+        return redirect("users:library")
+
+
+user_detail_view = UserDetailView.as_view()
+
+
+class LibraryStaffView(LoginRequiredMixin, TemplateView):
+    template_name = "users/library.html"
     model = User
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
-        context["categories_library_staff"] = CategoryLibraryStaff.objects.filter(
+        context["categories"] = CategoryLibraryStaff.objects.filter(
             type_staff=self.request.user.type_staff,
         )
 
@@ -28,7 +46,7 @@ class UserDetailView(LoginRequiredMixin, TemplateView):
         return context
 
 
-user_detail_view = UserDetailView.as_view()
+library_staff_view = LibraryStaffView.as_view()
 
 
 class UserLoginView(LoginView):
@@ -39,5 +57,37 @@ class UserLoginView(LoginView):
 user_login_view = UserLoginView.as_view()
 
 
-class CreateUserAdminView(LoginRequiredMixin, FormView):
-    template_name = "users/profile.html"
+class ManagerUserView(LoginRequiredMixin, FormView):
+    model = User
+    template_name = "users/manager_user.html"
+    form_class = UserCreationForm
+    success_url = reverse_lazy("users:manager_users")
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["users"] = User.objects.filter(is_superuser=False)
+        context["type_staff"] = TypeStaff.objects.all()
+        context["create_or_update_user"] = UserCreationForm
+        return context
+
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        user.password = make_password(user.password)
+        user.save()
+        return super().form_valid(form)
+
+
+manager_user_view = ManagerUserView.as_view()
+
+
+class UserDeleteView(LoginRequiredMixin, TemplateView):
+    model = User
+    template_name = "users/manager_user.html"
+    success_url = reverse_lazy("users:manager_users")
+
+    def get(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+        User.objects.filter(id=kwargs["id"]).delete()
+        return redirect("users:manager_users")
+
+
+user_delete_view = UserDeleteView.as_view()

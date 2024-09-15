@@ -16,12 +16,26 @@
     <meta name="description" content="Site tutoring center NewSchool" />
     <meta name="author" content="Alexei Sanko" />
     <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+          rel="stylesheet" />
     {% block css %}
       <!-- Latest compiled and minified Bootstrap CSS -->
       {% bootstrap_css %}
       <!-- Your stuff: Third-party CSS libraries go here -->
       <!-- This file stores project-specific CSS -->
-      <link href="{% static 'css/project.css' %}" rel="stylesheet" />
+      <!-- Vendor CSS Files -->
+      <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}"
+            rel="stylesheet" />
+      <link href="{% static 'vendor/boxicons/css/boxicons.min.css' %}"
+            rel="stylesheet" />
+      <link href="{% static 'vendor/quill/quill.snow.css' %}" rel="stylesheet" />
+      <link href="{% static 'vendor/quill/quill.bubble.css' %}" rel="stylesheet" />
+      <link href="{% static 'vendor/remixicon/remixicon.css' %}" rel="stylesheet" />
+      <link href="{% static 'vendor/simple-datatables/style.css' %}"
+            rel="stylesheet" />
+      <link href="{% static 'css/main.css' %}" rel="stylesheet" />
     {% endblock css %}
     <!-- Le javascript
     ================================================== -->
@@ -29,47 +43,48 @@
     {% block javascript %}
       <!-- Bootstrap JS -->
       {% bootstrap_javascript %}
-      <!-- Your stuff: Third-party javascript libraries go here -->
-      <!-- place project specific Javascript in this file -->
-      <script defer src="{% static 'js/project.js' %}"></script>
+      <script src="{% static 'vendor/quill/quill.js' %}"></script>
+      <script src="{% static 'vendor/tinymce/tinymce.min.js' %}"></script>
+      <script src="{% static 'js/main.js' %}"></script>
     {% endblock javascript %}
   </head>
   <body class="{% block bodyclass %}{% endblock bodyclass %}">
-    <!-- ======= Header ======= -->
-    <header id="header" class="header fixed-top d-flex align-items-center">
-      <div class="d-flex align-items-center justify-content-between">
-        <a href="{% url "home" %}" class="logo d-flex align-items-center">
-          <img src="{% static "images/logo.png" %}" alt="" />
-        </a>
-        <i class="bi bi-list toggle-sidebar-btn"></i>
-      </div>
-      <!-- End Logo -->
-      <nav class="header-nav ms-auto">
-        <ul class="d-flex align-items-center">
-          <li class="nav-item pe-3">
-            <a class="nav-link nav-profile d-flex align-items-center pe-0"
-               href="{% url "users:profile" %}">
-              <span class="d-none d-md-block  ps-2">
-                {% if request.user.is_authenticated %}
-                  Профиль
-                {% else %}
-                  Войти
-                {% endif %}
-              </span>
-            </a>
-          </li>
-          {% if request.user.is_authenticated %}
+    {% block body %}
+      <!-- ======= Header ======= -->
+      <header id="header" class="header fixed-top d-flex align-items-center">
+        <div class="d-flex align-items-center justify-content-between">
+          <a href="{% url "home" %}" class="logo d-flex align-items-center">
+            <img src="{% static "images/logo.png" %}" alt="" />
+            <span class="d-none d-lg-block">NewSchool</span>
+          </a>
+          <i class="bi bi-list toggle-sidebar-btn"></i>
+        </div>
+        <!-- End Logo -->
+        <nav class="header-nav ms-auto">
+          <ul class="d-flex align-items-center">
             <li class="nav-item pe-3">
               <a class="nav-link nav-profile d-flex align-items-center pe-0"
-                 href="{% url "users:logout" %}">
-                <span class="d-none d-md-block  ps-2">Выйти</span>
+                 href="{% url "users:profile" %}">
+                <span class="d-none d-md-block  ps-2">
+                  {% if request.user.is_authenticated %}
+                    Профиль
+                  {% else %}
+                    Войти
+                  {% endif %}
+                </span>
               </a>
             </li>
-          {% endif %}
-        </ul>
-      </nav>
-    </header>
-    {% block body %}
+            {% if request.user.is_authenticated %}
+              <li class="nav-item pe-3">
+                <a class="nav-link nav-profile d-flex align-items-center pe-0"
+                   href="{% url "users:logout" %}">
+                  <span class="d-none d-md-block  ps-2">Выйти</span>
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </header>
       {% block sidebar %}
       {% endblock sidebar %}
       <main id="main" class="main">
