@@ -4,15 +4,14 @@ from django.conf import settings
 
 class MyClassConnecter:
     def __init__(self) -> None:
-        self.apikey = settings.MYCLASS_API_KEY
+        self.apikey = settings.TOKEN_MY_CLASS
 
     def _get_token(self) -> str:
         response = requests.post(
             "https://api.moyklass.com/v1/company/auth/getToken",
-            data={"apiKey": self.apikey},
+            json={"apiKey": self.apikey},
             timeout=10,
         ).json()
-
         return response["accessToken"]
 
     def _revoke_token(self, token: str) -> None:
@@ -23,7 +22,7 @@ class MyClassConnecter:
             headers={"x-access-token": token},
         )
 
-    def request_to_my_class(self, method: str, path: str, params: dict):
+    def request_to_my_class(self, method: str, path: str, params: dict | None = None):
         token = self._get_token()
         response = requests.request(
             method,

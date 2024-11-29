@@ -12,16 +12,15 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView
 from django.views.generic import TemplateView
+from django.shortcuts import render
 
-from newschool.myclass.models import Lesson
-from newschool.myclass.models import Record
-from newschool.myclass.models import Teacher
-from newschool.myclass.utils import update_info_from_myclass
+
 from newschool.staff.models import CategoryLibraryStaff
 from newschool.staff.models import LibraryStaff
 from newschool.staff.models import TypeStaff
-from newschool.users.forms import UserCreationForm
+from newschool.users.forms import UserCreationForm, DateForStatisticsForm
 from newschool.users.models import User
+from newschool.myclass.utils import calculate_statistic_teacher
 
 
 class UserDetailView(LoginRequiredMixin, TemplateView):
@@ -100,27 +99,16 @@ class UserDeleteView(LoginRequiredMixin, TemplateView):
 user_delete_view = UserDeleteView.as_view()
 
 
-class StatiscticView(LoginRequiredMixin, TemplateView):
-    template_name = "users/statistic.html"
-    model = User
+class StatisticTeacherView(LoginRequiredMixin, FormView):
+    template_name = "users/statistic_teacher.html"
+    form_class = DateForStatisticsForm
 
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        update_info_from_myclass(date(2024, 18, 11))
-        context = super().get_context_data(**kwargs)
-        lessons = Lesson.objects.filter(status=1).order_by("-date", "teacher")
-        records = Record.objects.values("lesson__id").annotate(Count("paid"))
-        lessons_statistics = lessons.annotate(total=Count(id))
-        context["statistics"] = records.all()
-        context["library_staff"] = LibraryStaff.objects.filter(
-            type_staff=self.request.user.type_staff,
-        )
+    def form_valid(self, form):
+        input_date = form.cleaned_data['date']
+        result = calculate_statistic_teacher(input_date)
+        return render(self.request, 'users/statistic_teacher.html', {
+            'data': result,
+            'input_date': input_date
+        })
 
-        return context
-
-
-statistic_view = StatiscticView.as_view()
-
-
-def update_statistic(request):
-    update_info_from_myclass(date(2024, 18, 11))
-    return redirect("users:statistic")
+statistic_teacher_view = StatisticTeacherView.as_view()

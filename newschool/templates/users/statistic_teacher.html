@@ -1,0 +1,50 @@
+{% extends "users/profile_base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% crispy form form.helper %}
+{% load static %}
+
+{% block content %}
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-2">
+        <div class="card ">
+          <div class="card-body">
+            <h5 class="card-title">Статистика по учителям</h5>
+            <!-- Browser Default Validation -->
+            <form method="post" class="row g-3">
+              {{ form|crispy }}
+              <div class="col-12">
+                <button class="btn btn-success" type="submit">Получить статистику</button>
+              </div>
+              {% csrf_token %}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if data%}
+      <table class="table table-hover">
+        <thead>
+          <tr>
+              {% for column in data.0.keys %}
+                  <th>{{ column }}</th>
+              {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+        {% for row in data %}
+            <tr>
+                {% for value in row.values %}
+                    <td>{{ value }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+
+  </section>
+{% endblock content %}

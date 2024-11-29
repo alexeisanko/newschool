@@ -1,73 +1,79 @@
-from datetime import date
+import pandas as pd
+from newschool.myclass.connecter import MyClassConnecter
+from django.conf import settings
 
-from myclass.connecter import MyClassConnecter
-from myclass.models import Lesson
-from myclass.models import Record
-from myclass.models import Teacher
+def calculate_statistic_teacher(date):
+    params = {"date": date,
+            "includeRecords": 'true',
+            "limit": 500,
+            "offset": 0}
 
-
-def _load_all_teacher():
-    main_params = {
-        "method": "get",
-        "path": "company/managers",
-    }
-    connector = MyClassConnecter()
-    response = connector.request_to_my_class(
-        method=main_params["method"], path=main_params["path"]
+    myclass = MyClassConnecter()
+    lessons = myclass.request_to_my_class("GET", "company/lessons", params)
+    print(lessons)
+    teachers = myclass.request_to_my_class("GET", "company/managers")
+    df_lessons = pd.DataFrame.from_dict(lessons["lessons"])
+    df_lessons = df_lessons.explode("teacherIds")
+    df_lessons = df_lessons.drop(
+        [
+            "filialId",
+            "roomId",
+            "classId",
+            "comment",
+            "maxStudents",
+            "topic",
+            "description",
+            "date",
+            "beginTime",
+            "endTime",
+            "createdAt",
+        ],
+        axis=1,
     )
-
-    if response:
-        for teacher in response:
-            defaults = {
-                "name": teacher["name"],
-                "is_work": teacher["is_work"],
-            }
-            Teacher.objects.update_or_create(id=teacher["id"], defaults=defaults)
+    df_lessons = df_lessons.rename(columns={"teacherIds": "teacherId", "id": "lessonId"})
 
 
-def _load_lessons_by_teacher(date_load: date, teacher_id: int):
-    main_params = {
-        "method": "get",
-        "path": "company/lessons",
+    count_lessons_by_teacher = df_lessons.groupby(by=["teacherId"], as_index=False).count()[["teacherId", "lessonId", "status"]]
+    count_lessons_by_teacher = count_lessons_by_teacher.rename(columns={"lessonId": "planLessons", "status": "factLessons"})
+    count_lessons_by_teacher = count_lessons_by_teacher.set_index('teacherId')
+
+    df_lessons  =df_lessons.drop(["status"], axis=1)
+    df_records = df_lessons["records"]
+    df_lessons = df_lessons.drop(["records"], axis=1)
+
+    df_records = df_records.explode("records")
+    df_records = pd.DataFrame(df_records.tolist())[["free", "visit", "goodReason", "test", "paid", "lessonId"]]
+
+    records_data = df_records.groupby("lessonId").sum()
+    records_data["isIndividualLessons"] = records_data["paid"] + records_data["free"] + records_data["goodReason"] == 1
+    records_data["isTwinLessons"] = records_data["paid"] + records_data["free"] + records_data["goodReason"] == 2
+    records_data["isGroupLessons"] = records_data["paid"] + records_data["free"] + records_data["goodReason"] > 2
+
+    df_teacher = pd.DataFrame.from_dict(teachers)[["id", "name"]]
+    df_teacher = df_teacher.rename(columns={"id": "teacherId", "name": "teacherName"}).set_index('teacherId')
+
+    clean_data = df_lessons.join(records_data, on="lessonId")
+    clean_data = clean_data.groupby("teacherId", as_index=False).sum().drop(["lessonId"], axis=1)
+    clean_data = clean_data.join(df_teacher, "teacherId")
+    clean_data = clean_data.join(count_lessons_by_teacher, "teacherId").drop(["teacherId"], axis=1)
+    clean_data["planVisit"] = clean_data["paid"] + clean_data["goodReason"] + clean_data["free"]
+    clean_data["badReason"] = clean_data["paid"] - clean_data["visit"] + clean_data["free"]
+    clean_data = clean_data[clean_data.columns[[8, 9, 10, 5, 6, 7, 11, 1, 4, 0, 3, 2, 12]]]
+
+    translate_columns = {
+        "teacherName": "ФИО репетитора",
+        "planLessons": "Количество занятий план",
+        "factLessons": "Количество занятий факт",
+        "isIndividualLessons": "Количество индивидуальных занятий факт",
+        "isTwinLessons": "Количество парных занятий факт",
+        "isGroupLessons": "Количество групповых занятий факт",
+        "planVisit": "количество посещений всего план",
+        "visit": "количество посещений всего факт",
+        "free": "количество бесплатных посещений (включая пробные занятия)",
+        "test": "количество пробных посещений факт",
+        "goodReason": "Отсутствие по ув. причине",
+        "badReason": "Отсутствие по не ув. причине",
+        "paid": "количество оплачиваемых посещений(включая пропущенные по не ув. причине)",
     }
-    other_params = {
-        "date": date_load.strftime("%Y-%m-%d"),
-        "includeRecords": True,
-        "teacherId": teacher_id,
-    }
-    connector = MyClassConnecter()
-    response = connector.request_to_my_class(
-        method=main_params["method"], path=main_params["path"], params=other_params
-    )
-    if response:
-        for lesson in response:
-            defaults = {
-                "date": date.fromisoformat(lesson["date"]),
-                "status": lesson["status"],
-                "teacher": Teacher.objects.get(id=teacher_id),
-            }
-            Lesson.objects.update_or_create(id=lesson["id"], defaults=defaults)
-            _save_records(response["records"], lesson["id"])
-
-
-def _save_records(records: dict, lesson_id: int):
-    for record in records:
-        defaults = {
-            "status": record["status"],
-            "student": record["student"],
-            "lesson": Lesson.objects.get(id=lesson_id),
-            "free": record["free"],
-            "visit": record["visit"],
-            "good_reason": record["goodReason"],
-            "test": record["test"],
-            "skip": record["skip"],
-            "paid": record["paid"],
-        }
-        Record.objects.update_or_create(id=record["id"], defaults=defaults)
-
-
-def update_info_from_myclass(date_load: date):
-    _load_all_teacher()
-    teachers = Teacher.objects.all()
-    for teacher in teachers:
-        _load_lessons_by_teacher(date_load, teacher_id=teacher.id)
+    clean_data = clean_data.rename(columns=translate_columns)
+    return clean_data.to_dict(orient='records')
