@@ -31,3 +31,16 @@ class UserCreationForm(forms.ModelForm):
         self.helper.method = "POST"
         self.helper.form_class = "form-inline"
         self.helper.label_class = "col-lg-2"
+
+
+class DateForStatisticsForm(forms.Form):
+    date = forms.DateField(label="Отчетная дата", widget=forms.DateInput(attrs={"type": "date"}))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.method = "POST"
+        self.helper.form_class = "form-inline"
+        self.helper.label_class = "col-lg-2"

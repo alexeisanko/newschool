@@ -79,10 +79,11 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    # Your stuff: custom apps go here
     "newschool.users",
     "newschool.site",
     "newschool.staff",
-    # Your stuff: custom apps go here
+    "newschool.myclass",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -290,3 +291,5 @@ CELERY_TASK_SEND_SENT_EVENT = True
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+TOKEN_MY_CLASS = env("TOKEN_MY_CLASS")

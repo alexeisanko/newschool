@@ -1,20 +1,26 @@
+from datetime import date
 from typing import Any
 
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
+from django.db.models import Count
+from django.db.models import Max
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView
 from django.views.generic import TemplateView
+from django.shortcuts import render
+
 
 from newschool.staff.models import CategoryLibraryStaff
 from newschool.staff.models import LibraryStaff
 from newschool.staff.models import TypeStaff
-from newschool.users.forms import UserCreationForm
+from newschool.users.forms import UserCreationForm, DateForStatisticsForm
 from newschool.users.models import User
+from newschool.myclass.utils import calculate_statistic_teacher
 
 
 class UserDetailView(LoginRequiredMixin, TemplateView):
@@ -91,3 +97,18 @@ class UserDeleteView(LoginRequiredMixin, TemplateView):
 
 
 user_delete_view = UserDeleteView.as_view()
+
+
+class StatisticTeacherView(LoginRequiredMixin, FormView):
+    template_name = "users/statistic_teacher.html"
+    form_class = DateForStatisticsForm
+
+    def form_valid(self, form):
+        input_date = form.cleaned_data['date']
+        result = calculate_statistic_teacher(input_date)
+        return render(self.request, 'users/statistic_teacher.html', {
+            'data': result,
+            'input_date': input_date
+        })
+
+statistic_teacher_view = StatisticTeacherView.as_view()
