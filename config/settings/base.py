@@ -292,4 +292,4 @@ CELERY_TASK_SEND_SENT_EVENT = True
 # Your stuff...
 # ------------------------------------------------------------------------------
 
-TOKEN_MY_CLASS = env("TOKEN_MY_CLASS")
+TOKEN_MY_CLASS = env("TOKEN_MY_CLASS", default="test")
