@@ -99,16 +99,16 @@ class UserDeleteView(LoginRequiredMixin, TemplateView):
 user_delete_view = UserDeleteView.as_view()
 
 
-class StatisticTeacherView(LoginRequiredMixin, FormView):
-    template_name = "users/statistic_teacher.html"
+class ReportsAdminViews(LoginRequiredMixin, FormView):
+    template_name = "users/get_reports.html"
     form_class = DateForStatisticsForm
 
     def form_valid(self, form):
         input_date = form.cleaned_data['date']
         result = calculate_statistic_teacher(input_date)
-        return render(self.request, 'users/statistic_teacher.html', {
+        return render(self.request, 'users/calculated_reports.html', {
             'data': result,
             'input_date': input_date
         })
 
-statistic_teacher_view = StatisticTeacherView.as_view()
+statistic_teacher_view = ReportsAdminViews.as_view()
