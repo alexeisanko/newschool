@@ -279,3 +279,7 @@ newschool/media/
 .env
 .envs/*
 !.envs/.local/
+
+
+### Secrets
+.credentials
