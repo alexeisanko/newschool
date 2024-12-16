@@ -84,6 +84,8 @@ LOCAL_APPS = [
     "newschool.site",
     "newschool.staff",
     "newschool.myclass",
+    "newschool.google_sheets",
+    "newschool.reports",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
