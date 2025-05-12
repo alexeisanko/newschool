@@ -55,6 +55,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
+# Установите supervisor
+RUN apt-get update && apt-get install --no-install-recommends -y supervisor
 # All absolute dir copies ignore workdir instruction. All relative dir copies are wrt to the workdir instruction
 # copy python dependency wheels from python-build-stage
 COPY --from=python-build-stage /usr/src/app/wheels  /wheels/
@@ -83,6 +85,8 @@ RUN chmod +x /start-celerybeat
 COPY ./compose/local/django/celery/flower/start /start-flower
 RUN sed -i 's/\r$//g' /start-flower
 RUN chmod +x /start-flower
+
+COPY ./compose/local/django/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 
 # copy application code to WORKDIR

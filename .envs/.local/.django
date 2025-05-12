@@ -4,14 +4,19 @@ USE_DOCKER=yes
 IPYTHONDIR=/app/.ipython
 # Redis
 # ------------------------------------------------------------------------------
-REDIS_URL=redis://redis:6379/0
+REDIS_URL=redis://redis:6379/1
 
 # Celery
 # ------------------------------------------------------------------------------
+CELERY_BROKER_URL=""
 
 # Flower
 CELERY_FLOWER_USER=APXCvGJqyPYPeiXnZeBKXfsgFbRAWfcE
 CELERY_FLOWER_PASSWORD=zhGEFHSrZ6PvjMohqZcvIMXYsqncH3h5PrJFEeRqQI4zud8m2SRO27lEt9OzTD5m
 
 
-TOKEN_MY_CLASS=test
+TOKEN_MY_CLASS=01thqvvDA38VMXwDPJ80b1a8jcBwDVbYv99dT6H4zuX7gHd0tJDC
+
+VK_GROUP_TOKEN=vk1.a.XtZHohYKQRL8M3PYITsNmSinuLHjhqfnWdqrs9eY-JcoC7kBxr5OjP4NkZ759K_QPaPG5p5B1mdL72LVA8Rj6t3xWFfuWyNZEdoowal91OsTrrRW2tBUi5vEkFiWselNKCHUvZmbcIySd-29HR4qL_L-rK_Cmhj9Ny0dl6adzpV7PqaVCZm-kgXetaGQ_mwspxQXg2bRAIP-cnmP-PKN7Q
+VK_GROUP_ID=205480957
+VK_ACCESS_TOKEN=1d0660f81d0660f81d0660f8b31e21491111d061d0660f87a7ebcd1a68c89615959946b

@@ -86,6 +86,7 @@ LOCAL_APPS = [
     "newschool.myclass",
     "newschool.google_sheets",
     "newschool.reports",
+    "newschool.trial_exam",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -295,3 +296,7 @@ CELERY_TASK_SEND_SENT_EVENT = True
 # ------------------------------------------------------------------------------
 
 TOKEN_MY_CLASS = env("TOKEN_MY_CLASS", default="test")
+
+VK_GROUP_TOKEN = env("VK_GROUP_TOKEN", default="test")
+VK_GROUP_ID = env("VK_GROUP_ID", default=0)
+VK_ACCESS_TOKEN = env("VK_ACCESS_TOKEN", default="test")
