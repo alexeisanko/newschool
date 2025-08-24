@@ -72,6 +72,11 @@ services:
     image: newschool_production_flower
     command: /start-flower
 
+  botservice:
+    <<: *django
+    image: newschool_production_botservice
+    command: python manage.py run_bot
+
   nginx:
     build:
       context: .

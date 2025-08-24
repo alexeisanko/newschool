@@ -69,3 +69,13 @@ services:
     ports:
       - '5555:5555'
     command: /start-flower
+
+  botservice:
+    <<: *django
+    image: newschool_local_botservice
+    container_name: newschool_local_botservice
+    depends_on:
+      - redis
+      - postgres
+    ports: []
+    command: python manage.py run_bot

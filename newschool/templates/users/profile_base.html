@@ -7,25 +7,25 @@
   <!-- ======= Sidebar ======= -->
   <aside id="sidebar" class="sidebar">
     <ul class="sidebar-nav" id="sidebar-nav">
-      <li class="nav-item">
-        <a class="nav-link collapsed " href="{% url "users:library" %}">
-          <i class="bi bi-grid"></i>
-          <span>Библиотека</span>
-        </a>
-      </li>
-      {% if request.user.is_staff %}
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="{% url "users:manager_users" %}">
-            <span>Пользователи</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="{% url "users:teacher_statistics" %}">
-            <span>Отчеты</span>
-          </a>
-        </li>
+      {% if request.user.type_staff %}
+        {% for section in request.user.type_staff.site_sections.all %}
+          {% if section.is_active %}
+            <li class="nav-item">
+              <a class="nav-link collapsed" href="{% url section.url_name %}">
+                {% if section.icon %}
+                  <i class="{{ section.icon }}"></i>
+                {% endif %}
+                <span>{{ section.name }}</span>
+              </a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      
+      {% if request.user.is_superuser %}
         <li class="nav-item">
           <a class="nav-link collapsed" href="{% url 'admin:index' %}">
+            <i class="bi bi-gear"></i>
             <span>Панель администратора</span>
           </a>
         </li>
